@@ -8,6 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { NavbarComponent } from '../navbar/navbar';
 import { UserService } from '../../services/user';
 
@@ -24,6 +25,7 @@ import { UserService } from '../../services/user';
     MatSelectModule,
     MatTableModule,
     MatIconModule,
+    MatProgressSpinnerModule,
     NavbarComponent
   ],
   templateUrl: './admin-panel.html',
@@ -35,6 +37,8 @@ export class AdminPanelComponent implements OnInit {
   roles = ['Admin', 'Supervisor', 'Worker'];
   successMsg = '';
   errorMsg = '';
+  isLoading = false;
+  isLoadingUsers = false;
 
   constructor(
     private fb: FormBuilder,
@@ -55,9 +59,16 @@ export class AdminPanelComponent implements OnInit {
   }
 
   loadUsers() {
+    this.isLoadingUsers = true;
     this.userSvc.getAll().subscribe({
-      next: u => this.users = u,
-      error: () => this.errorMsg = 'Failed to load users'
+      next: u => {
+        this.users = u;
+        this.isLoadingUsers = false;
+      },
+      error: () => {
+        this.errorMsg = 'Failed to load users';
+        this.isLoadingUsers = false;
+      }
     });
   }
 
@@ -65,13 +76,18 @@ export class AdminPanelComponent implements OnInit {
     this.successMsg = '';
     this.errorMsg = '';
     if (this.createForm.invalid) return;
+    this.isLoading = true;
     this.userSvc.create(this.createForm.value).subscribe({
       next: () => {
+        this.isLoading = false;
         this.successMsg = 'User created successfully!';
         this.createForm.reset({ role: 'Worker' });
         this.loadUsers();
       },
-      error: err => this.errorMsg = err.error?.message || 'Failed to create user'
+      error: err => {
+        this.isLoading = false;
+        this.errorMsg = err.error?.message || 'Failed to create user';
+      }
     });
   }
 
