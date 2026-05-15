@@ -1,3 +1,6 @@
+// Entry point for the Express application
+// Configures middleware, routes, security, and database connection
+
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');

@@ -1,3 +1,7 @@
+// HTTP Interceptor — automatically attaches JWT token
+// to every outgoing HTTP request as Authorization header
+// This means services don't need to manually add tokens
+
 import { Injectable } from '@angular/core';
 import { HttpInterceptor, HttpRequest, HttpHandler } from '@angular/common/http';
 import { AuthService } from '../services/auth';

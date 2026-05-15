@@ -1,3 +1,7 @@
+// Auth Guard — protects routes from unauthenticated access
+// Checks localStorage for valid token
+// Redirects to /login if not authenticated
+
 import { inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
 import { CanActivateFn, Router } from '@angular/router';

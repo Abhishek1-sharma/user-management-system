@@ -1,3 +1,7 @@
+// JWT Authentication Middleware
+// Verifies the Bearer token on every protected route
+// Attaches decoded user payload to req.user for downstream use
+
 const jwt = require('jsonwebtoken');
 
 module.exports = (req, res, next) => {
