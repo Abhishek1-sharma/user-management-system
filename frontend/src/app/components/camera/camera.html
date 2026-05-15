@@ -1,0 +1,35 @@
+<app-navbar></app-navbar>
+<div class="camera-container" style="padding:20px">
+  <h2>Image Capture</h2>
+
+<div *ngIf="cameraActive">
+  <video #videoEl autoplay playsinline
+    style="width:100%;max-width:600px;border-radius:8px;background:#000;display:block">
+  </video>
+  <br/>
+  <button mat-raised-button color="accent" (click)="capture()">📸 Capture</button>
+</div>
+
+  <canvas #canvasEl hidden></canvas>
+
+  <div *ngIf="capturedImage">
+    <img [src]="capturedImage" alt="Preview" style="width:100%;max-width:500px" />
+    <br/>
+    <button mat-raised-button color="primary" (click)="saveImage()">💾 Save</button>
+    <button mat-stroked-button (click)="startCamera()" style="margin-left:8px">🔄 Retake</button>
+  </div>
+
+  <div *ngIf="!cameraActive && !capturedImage">
+    <button mat-raised-button color="primary" (click)="startCamera()">📷 Open Camera</button>
+  </div>
+
+  <p *ngIf="message" style="color:green">{{ message }}</p>
+
+  <h3>My Captured Images</h3>
+  <div style="display:flex;flex-wrap:wrap;gap:10px">
+    <img *ngFor="let img of myImages"
+  [src]="baseUrl + img.path + '?token=' + token"
+  [alt]="img.filename"
+  style="width:150px;height:150px;object-fit:cover;border-radius:8px;border:2px solid #ddd" />
+  </div>
+</div>

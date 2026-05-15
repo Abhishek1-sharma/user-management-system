@@ -1,0 +1,16 @@
+<mat-toolbar color="primary">
+  <span style="font-weight:bold">UMS App</span>
+  <span style="flex:1"></span>
+  <span style="margin-right:16px;font-size:14px">
+    👤 {{ auth.getUsername() }} | {{ auth.getRole() }}
+  </span>
+  <button mat-button routerLink="/camera">📷 Camera</button>
+  @if (auth.getRole() === 'Admin') {
+    <button mat-button routerLink="/admin">⚙️ Admin Panel</button>
+    <button mat-button routerLink="/all-images">🖼️ All Images</button>
+  }
+  @if (auth.getRole() === 'Supervisor') {
+    <button mat-button routerLink="/all-images">🖼️ All Images</button>
+  }
+  <button mat-button (click)="auth.logout()" style="margin-left:8px">🚪 Logout</button>
+</mat-toolbar>
