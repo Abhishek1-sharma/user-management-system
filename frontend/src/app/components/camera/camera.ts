@@ -1,7 +1,7 @@
 import { Component, ViewChild, ElementRef, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
-import { CommonModule } from '@angular/common';
+import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ImageService } from '../../services/image';
 import { AuthService } from '../../services/auth';
 import { NavbarComponent } from '../navbar/navbar';
@@ -9,7 +9,7 @@ import { NavbarComponent } from '../navbar/navbar';
 @Component({
   selector: 'app-camera',
   standalone: true,
-  imports: [CommonModule, MatButtonModule, NavbarComponent],
+  imports: [CommonModule, MatButtonModule, NavbarComponent, MatProgressSpinnerModule],
   templateUrl: './camera.html',
   styleUrls: ['./camera.scss']
 })
@@ -21,7 +21,10 @@ export class CameraComponent implements OnDestroy {
   capturedImage: string | null = null;
   myImages: any[] = [];
   message = '';
+  messageType: 'success' | 'error' = 'success';
   cameraActive = false;
+  isSaving = false;
+  isLoadingImages = false;
   baseUrl = 'http://localhost:5000/';
   token = '';
 
@@ -47,6 +50,7 @@ export class CameraComponent implements OnDestroy {
       this.videoEl.nativeElement.srcObject = this.stream;
     } catch (err) {
       this.message = 'Camera access denied. Please allow camera permissions.';
+      this.messageType = 'error';
       this.cameraActive = false;
     }
   }
@@ -63,14 +67,22 @@ export class CameraComponent implements OnDestroy {
 
   saveImage() {
     if (!this.capturedImage) return;
+    this.isSaving = true;
+    this.message = '';
     const blob = this.dataURLtoBlob(this.capturedImage);
     this.imageSvc.upload(blob).subscribe({
       next: () => {
+        this.isSaving = false;
         this.message = 'Image saved successfully!';
+        this.messageType = 'success';
         this.capturedImage = null;
         this.loadMyImages();
       },
-      error: () => this.message = 'Failed to save image.'
+      error: () => {
+        this.isSaving = false;
+        this.message = 'Failed to save image. Please try again.';
+        this.messageType = 'error';
+      }
     });
   }
 
@@ -89,7 +101,16 @@ export class CameraComponent implements OnDestroy {
   }
 
   loadMyImages() {
-    this.imageSvc.getMyImages().subscribe(imgs => this.myImages = imgs);
+    this.isLoadingImages = true;
+    this.imageSvc.getMyImages().subscribe({
+      next: imgs => {
+        this.myImages = imgs;
+        this.isLoadingImages = false;
+      },
+      error: () => {
+        this.isLoadingImages = false;
+      }
+    });
   }
 
   ngOnDestroy() { this.stopCamera(); }

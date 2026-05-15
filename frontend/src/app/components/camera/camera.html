@@ -1,35 +1,79 @@
 <app-navbar></app-navbar>
-<div class="camera-container" style="padding:20px">
-  <h2>Image Capture</h2>
+<div style="padding:20px;max-width:700px;margin:auto">
+  <h2>📷 Image Capture</h2>
 
-<div *ngIf="cameraActive">
-  <video #videoEl autoplay playsinline
-    style="width:100%;max-width:600px;border-radius:8px;background:#000;display:block">
-  </video>
-  <br/>
-  <button mat-raised-button color="accent" (click)="capture()">📸 Capture</button>
-</div>
+  <!-- Camera Feed -->
+  @if (cameraActive) {
+    <div>
+      <video #videoEl autoplay playsinline
+        style="width:100%;max-width:600px;border-radius:8px;background:#000;display:block">
+      </video>
+      <br/>
+      <button mat-raised-button color="accent" (click)="capture()">
+        📸 Capture Photo
+      </button>
+    </div>
+  }
 
   <canvas #canvasEl hidden></canvas>
 
-  <div *ngIf="capturedImage">
-    <img [src]="capturedImage" alt="Preview" style="width:100%;max-width:500px" />
-    <br/>
-    <button mat-raised-button color="primary" (click)="saveImage()">💾 Save</button>
-    <button mat-stroked-button (click)="startCamera()" style="margin-left:8px">🔄 Retake</button>
-  </div>
+  <!-- Preview captured image -->
+  @if (capturedImage) {
+    <div>
+      <img [src]="capturedImage" alt="Preview"
+        style="width:100%;max-width:600px;border-radius:8px;border:2px solid #ddd" />
+      <br/><br/>
+      <button mat-raised-button color="primary"
+        (click)="saveImage()" [disabled]="isSaving"
+        style="min-width:120px">
+        @if (isSaving) {
+          <mat-spinner diameter="20"
+            style="display:inline-block;margin-right:8px"></mat-spinner>
+          Saving...
+        } @else {
+          💾 Save Image
+        }
+      </button>
+      <button mat-stroked-button (click)="startCamera()"
+        [disabled]="isSaving" style="margin-left:8px">
+        🔄 Retake
+      </button>
+    </div>
+  }
 
-  <div *ngIf="!cameraActive && !capturedImage">
-    <button mat-raised-button color="primary" (click)="startCamera()">📷 Open Camera</button>
-  </div>
+  <!-- Open Camera button -->
+  @if (!cameraActive && !capturedImage) {
+    <div>
+      <button mat-raised-button color="primary" (click)="startCamera()">
+        📷 Open Camera
+      </button>
+    </div>
+  }
 
-  <p *ngIf="message" style="color:green">{{ message }}</p>
+  <!-- Status message -->
+  @if (message) {
+    <p [style.color]="messageType === 'success' ? 'green' : 'red'"
+      style="font-weight:bold;margin-top:12px">
+      {{ messageType === 'success' ? '✅' : '❌' }} {{ message }}
+    </p>
+  }
 
-  <h3>My Captured Images</h3>
-  <div style="display:flex;flex-wrap:wrap;gap:10px">
-    <img *ngFor="let img of myImages"
-  [src]="baseUrl + img.path + '?token=' + token"
-  [alt]="img.filename"
-  style="width:150px;height:150px;object-fit:cover;border-radius:8px;border:2px solid #ddd" />
-  </div>
+  <!-- My Images Gallery -->
+  <h3 style="margin-top:32px">🖼️ My Captured Images</h3>
+
+  @if (isLoadingImages) {
+    <div style="text-align:center;padding:20px">
+      <mat-spinner diameter="40" style="margin:auto"></mat-spinner>
+      <p style="color:gray;margin-top:8px">Loading images...</p>
+    </div>
+  } @else if (myImages.length === 0) {
+    <p style="color:gray">No images captured yet. Open the camera to get started!</p>
+  } @else {
+    <div style="display:flex;flex-wrap:wrap;gap:10px">
+      <img *ngFor="let img of myImages"
+        [src]="baseUrl + img.path + '?token=' + token"
+        [alt]="img.filename"
+        style="width:150px;height:150px;object-fit:cover;border-radius:8px;border:2px solid #ddd" />
+    </div>
+  }
 </div>
