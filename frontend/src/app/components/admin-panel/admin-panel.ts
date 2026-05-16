@@ -1,6 +1,6 @@
-import { Component, OnInit, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, OnInit, inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser, CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -32,25 +32,22 @@ import { UserService } from '../../services/user';
   styleUrls: ['./admin-panel.scss']
 })
 export class AdminPanelComponent implements OnInit {
+  private platformId = inject(PLATFORM_ID);
+  private fb = inject(FormBuilder);
+  private userSvc = inject(UserService);
+
   users: any[] = [];
-  createForm: FormGroup;
   roles = ['Admin', 'Supervisor', 'Worker'];
   successMsg = '';
   errorMsg = '';
   isLoading = false;
   isLoadingUsers = false;
 
-  constructor(
-    private fb: FormBuilder,
-    private userSvc: UserService,
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) {
-    this.createForm = this.fb.group({
-      username: ['', [Validators.required, Validators.minLength(3)]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      role: ['Worker', Validators.required]
-    });
-  }
+  createForm = this.fb.group({
+    username: ['', [Validators.required, Validators.minLength(3)]],
+    password: ['', [Validators.required, Validators.minLength(6)]],
+    role: ['Worker', Validators.required]
+  });
 
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
