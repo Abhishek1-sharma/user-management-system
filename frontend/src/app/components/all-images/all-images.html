@@ -1,22 +1,211 @@
 <app-navbar></app-navbar>
-<div style="padding:20px;max-width:1000px;margin:auto">
-  <h2>All Captured Images</h2>
 
-  <div *ngIf="images.length === 0">
-    <p>No images captured yet.</p>
-  </div>
+<div
+  style="
+    min-height:calc(100vh - 64px);
+    background:#f0f4f8;
+    padding:24px 16px;
+  ">
 
-  <div style="display:flex;flex-wrap:wrap;gap:16px">
-    <div *ngFor="let img of images"
-      style="border:1px solid #ddd;border-radius:8px;padding:8px;width:180px">
-      <img [src]="baseUrl + img.path + '?token=' + token"
-  style="width:100%;height:150px;object-fit:cover;border-radius:4px" />
-      <p style="margin:6px 0 2px;font-weight:bold;font-size:13px">
-        👤 {{ img.userId?.username }}
+  <div style="max-width:1200px;margin:auto">
+
+    <!-- Header -->
+
+    <div style="margin-bottom:24px">
+
+      <h2
+        style="
+          margin:0;
+          font-size:24px;
+          font-weight:700;
+          color:#1a1a2e;
+        ">
+
+        🖼️ All Captured Images
+
+      </h2>
+
+      <p
+        style="
+          margin:4px 0 0;
+          color:#666;
+          font-size:14px;
+          margin-top:15px
+        ">
+
+        View all captured images uploaded by users
+
       </p>
-      <p style="margin:0;font-size:11px;color:gray">
-        {{ img.userId?.role }} · {{ img.capturedAt | date:'short' }}
-      </p>
+
     </div>
+
+    <!-- Main Card -->
+
+    <div
+      style="
+        background:white;
+        border-radius:16px;
+        padding:24px;
+        box-shadow:0 2px 12px rgba(0,0,0,0.08);
+      ">
+
+      <!-- Loading -->
+
+      @if (isLoading) {
+
+        <div style="text-align:center;padding:40px">
+
+          <mat-spinner
+            diameter="40"
+            style="margin:auto">
+          </mat-spinner>
+
+          <p
+            style="
+              color:#999;
+              margin-top:12px;
+              font-size:14px;
+            ">
+
+            Loading images...
+
+          </p>
+
+        </div>
+
+      }
+
+      <!-- Empty -->
+
+      @else if (images.length === 0) {
+
+        <div style="text-align:center;padding:40px 20px">
+
+          <div
+            style="
+              font-size:48px;
+              margin-bottom:12px;
+            ">
+
+            🖼️
+
+          </div>
+
+          <p
+            style="
+              color:#999;
+              font-size:14px;
+              margin:0;
+            ">
+
+            No images captured yet.
+
+          </p>
+
+        </div>
+
+      }
+
+      <!-- Images -->
+
+      @else {
+
+        <div
+          style="
+            display:grid;
+            grid-template-columns:
+            repeat(auto-fill,minmax(220px,1fr));
+            gap:18px;
+          ">
+
+          @for (img of images; track img._id) {
+
+            <div
+              style="
+                border-radius:12px;
+                overflow:hidden;
+                background:white;
+                box-shadow:0 2px 10px rgba(0,0,0,0.08);
+                transition:all 0.25s ease;
+                cursor:pointer;
+              "
+
+              onmouseover="
+                this.style.transform='translateY(-4px)';
+                this.style.boxShadow='0 8px 22px rgba(0,0,0,0.14)';
+              "
+
+              onmouseout="
+                this.style.transform='translateY(0)';
+                this.style.boxShadow='0 2px 10px rgba(0,0,0,0.08)';
+              ">
+
+              <!-- Image -->
+
+              <img
+                [src]="baseUrl + img.path + '?token=' + token"
+                [alt]="img.userId?.username"
+                style="
+                  width:100%;
+                  height:200px;
+                  object-fit:cover;
+                  display:block;
+                " />
+
+              <!-- Content -->
+
+              <div
+                style="
+                  padding:12px;
+                  background:#fff;
+                ">
+
+                <p
+                  style="
+                    margin:0 0 6px;
+                    font-size:14px;
+                    font-weight:600;
+                    color:#1a1a2e;
+                  ">
+
+                  👤 {{ img.userId?.username }}
+
+                </p>
+
+                <p
+                  style="
+                    margin:0;
+                    font-size:12px;
+                    color:#666;
+                  ">
+
+                  {{ img.userId?.role }}
+
+                </p>
+
+                <p
+                  style="
+                    margin-top:8px;
+                    font-size:11px;
+                    color:#999;
+                  ">
+
+                  📅 {{ img.capturedAt | date:'medium' }}
+
+                </p>
+
+              </div>
+
+            </div>
+
+          }
+
+        </div>
+
+      }
+
+    </div>
+
   </div>
+
 </div>

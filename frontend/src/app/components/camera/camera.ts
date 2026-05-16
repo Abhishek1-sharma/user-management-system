@@ -1,10 +1,11 @@
-import { Component, ViewChild, ElementRef, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
+import { Component, ViewChild, ElementRef, OnInit, OnDestroy, Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ImageService } from '../../services/image';
 import { AuthService } from '../../services/auth';
 import { NavbarComponent } from '../navbar/navbar';
+import { ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-camera',
@@ -13,7 +14,7 @@ import { NavbarComponent } from '../navbar/navbar';
   templateUrl: './camera.html',
   styleUrls: ['./camera.scss']
 })
-export class CameraComponent implements OnDestroy {
+export class CameraComponent implements OnInit, OnDestroy {
   @ViewChild('videoEl') videoEl!: ElementRef<HTMLVideoElement>;
   @ViewChild('canvasEl') canvasEl!: ElementRef<HTMLCanvasElement>;
 
@@ -28,16 +29,22 @@ export class CameraComponent implements OnDestroy {
   baseUrl = 'http://localhost:5000/';
   token = '';
 
-  constructor(
-    private imageSvc: ImageService,
-    private auth: AuthService,
-    @Inject(PLATFORM_ID) private platformId: Object
-  ) {
-    if (isPlatformBrowser(this.platformId)) {
-      this.token = this.auth.getToken() || '';
+constructor(
+  private imageSvc: ImageService,
+  private auth: AuthService,
+  private cdr: ChangeDetectorRef,
+  @Inject(PLATFORM_ID) private platformId: Object
+) {}
+
+ngOnInit() {
+  if (isPlatformBrowser(this.platformId)) {
+    this.token = this.auth.getToken() || '';
+
+    queueMicrotask(() => {
       this.loadMyImages();
-    }
+    });
   }
+}
 
   async startCamera() {
     if (!isPlatformBrowser(this.platformId)) return;
@@ -100,18 +107,27 @@ export class CameraComponent implements OnDestroy {
     this.cameraActive = false;
   }
 
-  loadMyImages() {
-    this.isLoadingImages = true;
-    this.imageSvc.getMyImages().subscribe({
-      next: imgs => {
-        this.myImages = imgs;
-        this.isLoadingImages = false;
-      },
-      error: () => {
-        this.isLoadingImages = false;
-      }
-    });
-  }
+loadMyImages() {
+  this.isLoadingImages = true;
+
+  this.imageSvc.getMyImages().subscribe({
+    next: imgs => {
+      this.myImages = [...imgs];
+
+      this.isLoadingImages = false;
+
+      this.cdr.detectChanges();
+    },
+
+    error: err => {
+      console.error(err);
+
+      this.isLoadingImages = false;
+
+      this.cdr.detectChanges();
+    }
+  });
+}
 
   ngOnDestroy() { this.stopCamera(); }
 }

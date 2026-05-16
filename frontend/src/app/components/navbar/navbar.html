@@ -4,7 +4,10 @@
   <span style="margin-right:16px;font-size:14px">
     👤 {{ auth.getUsername() }} | {{ auth.getRole() }}
   </span>
-  <button mat-button routerLink="/camera">📷 Camera</button>
+  <button
+  mat-button
+  [routerLink]="['/camera']"
+  routerLinkActive="active-link">📷 Camera</button>
   @if (auth.getRole() === 'Admin') {
     <button mat-button routerLink="/admin">⚙️ Admin Panel</button>
     <button mat-button routerLink="/all-images">🖼️ All Images</button>

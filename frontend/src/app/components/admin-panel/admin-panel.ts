@@ -1,6 +1,22 @@
-import { Component, OnInit, inject, PLATFORM_ID } from '@angular/core';
-import { isPlatformBrowser, CommonModule } from '@angular/common';
-import { FormBuilder, Validators, ReactiveFormsModule } from '@angular/forms';
+import {
+  Component,
+  OnInit,
+  inject,
+  PLATFORM_ID,
+  ChangeDetectorRef
+} from '@angular/core';
+
+import {
+  isPlatformBrowser,
+  CommonModule
+} from '@angular/common';
+
+import {
+  FormBuilder,
+  Validators,
+  ReactiveFormsModule
+} from '@angular/forms';
+
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -9,6 +25,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+
 import { NavbarComponent } from '../navbar/navbar';
 import { UserService } from '../../services/user';
 
@@ -32,14 +49,21 @@ import { UserService } from '../../services/user';
   styleUrls: ['./admin-panel.scss']
 })
 export class AdminPanelComponent implements OnInit {
+
   private platformId = inject(PLATFORM_ID);
   private fb = inject(FormBuilder);
   private userSvc = inject(UserService);
+  private cdr = inject(ChangeDetectorRef);
 
   users: any[] = [];
+
+  displayedColumns = ['username', 'role', 'actions'];
+
   roles = ['Admin', 'Supervisor', 'Worker'];
+
   successMsg = '';
   errorMsg = '';
+
   isLoading = false;
   isLoadingUsers = false;
 
@@ -51,55 +75,122 @@ export class AdminPanelComponent implements OnInit {
 
   ngOnInit() {
     if (isPlatformBrowser(this.platformId)) {
-      this.loadUsers();
+
+      queueMicrotask(() => {
+        this.loadUsers();
+      });
+
     }
   }
 
   loadUsers() {
     this.isLoadingUsers = true;
+
     this.userSvc.getAll().subscribe({
-      next: u => {
-        this.users = u;
+
+      next: (u: any[]) => {
+
+        this.users = [...u];
+
         this.isLoadingUsers = false;
+
+        this.cdr.detectChanges();
       },
+
       error: () => {
+
         this.errorMsg = 'Failed to load users';
+
         this.isLoadingUsers = false;
+
+        this.cdr.detectChanges();
       }
     });
   }
 
   createUser() {
+
     this.successMsg = '';
     this.errorMsg = '';
+
     if (this.createForm.invalid) return;
+
     this.isLoading = true;
+
     this.userSvc.create(this.createForm.value).subscribe({
+
       next: () => {
+
         this.isLoading = false;
+
         this.successMsg = 'User created successfully!';
-        this.createForm.reset({ role: 'Worker' });
-        this.loadUsers();
+
+        this.createForm.reset({
+          role: 'Worker'
+        });
+
+        queueMicrotask(() => {
+          this.loadUsers();
+        });
+
+        this.cdr.detectChanges();
       },
+
       error: err => {
+
         this.isLoading = false;
-        this.errorMsg = err.error?.message || 'Failed to create user';
+
+        this.errorMsg =
+          err.error?.message || 'Failed to create user';
+
+        this.cdr.detectChanges();
       }
     });
   }
 
   changeRole(id: string, role: string) {
+
     this.userSvc.updateRole(id, role).subscribe({
-      next: () => this.loadUsers(),
-      error: () => this.errorMsg = 'Failed to update role'
+
+      next: () => {
+
+        queueMicrotask(() => {
+          this.loadUsers();
+        });
+
+      },
+
+      error: () => {
+
+        this.errorMsg = 'Failed to update role';
+
+        this.cdr.detectChanges();
+      }
     });
   }
 
   deleteUser(id: string) {
-    if (confirm('Are you sure you want to delete this user?'))
-      this.userSvc.delete(id).subscribe({
-        next: () => this.loadUsers(),
-        error: () => this.errorMsg = 'Failed to delete user'
-      });
+
+    if (!confirm('Are you sure you want to delete this user?')) {
+      return;
+    }
+
+    this.userSvc.delete(id).subscribe({
+
+      next: () => {
+
+        queueMicrotask(() => {
+          this.loadUsers();
+        });
+
+      },
+
+      error: () => {
+
+        this.errorMsg = 'Failed to delete user';
+
+        this.cdr.detectChanges();
+      }
+    });
   }
 }

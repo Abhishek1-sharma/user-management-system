@@ -1,115 +1,512 @@
 <app-navbar></app-navbar>
-<div style="padding:20px;max-width:900px;margin:auto">
-  <h2>Admin Panel — User Management</h2>
 
-  <mat-card style="margin-bottom:24px">
-    <mat-card-content>
-      <h3>Create New User</h3>
-      <form [formGroup]="createForm" (ngSubmit)="createUser()"
-        style="display:flex;gap:12px;flex-wrap:wrap;align-items:flex-start">
+<div
+  style="
+    min-height:calc(100vh - 64px);
+    background:#f0f4f8;
+    padding:24px 16px;
+  ">
+
+  <div style="max-width:1100px;margin:auto">
+
+    <!-- Header -->
+
+    <div style="margin-bottom:24px">
+
+      <h2
+        style="
+          margin:0;
+          font-size:24px;
+          font-weight:700;
+          color:#1a1a2e;
+        ">
+
+        ⚙️ Admin Panel
+
+      </h2>
+
+      <p
+        style="
+          margin:4px 0 0;
+          color:#666;
+          font-size:14px;
+        ">
+
+        Manage users, roles and permissions
+
+      </p>
+
+    </div>
+
+    <!-- Create User Card -->
+
+    <div
+      style="
+        background:white;
+        border-radius:16px;
+        padding:24px;
+        box-shadow:0 2px 12px rgba(0,0,0,0.08);
+        margin-bottom:24px;
+      ">
+
+      <h3
+        style="
+          margin:0 0 20px;
+          font-size:20px;
+          font-weight:600;
+          color:#1a1a2e;
+        ">
+
+        👤 Create New User
+
+      </h3>
+
+      <form
+        [formGroup]="createForm"
+        (ngSubmit)="createUser()"
+        style="
+          display:grid;
+          grid-template-columns:
+          repeat(auto-fit,minmax(220px,1fr));
+          gap:16px;
+          align-items:start;
+        ">
+
+        <!-- Username -->
 
         <mat-form-field appearance="outline">
+
           <mat-label>Username</mat-label>
-          <input matInput formControlName="username" />
-          <mat-error *ngIf="createForm.get('username')?.hasError('required')">
-            Username is required
-          </mat-error>
-          <mat-error *ngIf="createForm.get('username')?.hasError('minlength')">
-            Minimum 3 characters
-          </mat-error>
-        </mat-form-field>
 
-        <mat-form-field appearance="outline">
-          <mat-label>Password</mat-label>
-          <input matInput type="password" formControlName="password" />
-          <mat-hint>Min 6 chars — share with user to login</mat-hint>
-          <mat-error *ngIf="createForm.get('password')?.hasError('required')">
-            Password is required
-          </mat-error>
-          <mat-error *ngIf="createForm.get('password')?.hasError('minlength')">
-            Minimum 6 characters
-          </mat-error>
-        </mat-form-field>
+          <input
+            matInput
+            formControlName="username" />
 
-        <mat-form-field appearance="outline">
-          <mat-label>Role</mat-label>
-          <mat-select formControlName="role">
-            @for (r of roles; track r) {
-              <mat-option [value]="r">{{ r }}</mat-option>
-            }
-          </mat-select>
-          <mat-error *ngIf="createForm.get('role')?.hasError('required')">
-            Role is required
-          </mat-error>
-        </mat-form-field>
+          @if (createForm.get('username')?.hasError('required')) {
 
-        <button mat-raised-button color="primary" type="submit"
-          [disabled]="createForm.invalid || isLoading"
-          style="margin-top:8px;min-width:120px">
-          @if (isLoading) {
-            <mat-spinner diameter="20"
-              style="display:inline-block;margin-right:8px"></mat-spinner>
-            Creating...
-          } @else {
-            Create User
+            <mat-error>
+              Username is required
+            </mat-error>
+
           }
-        </button>
+
+          @if (createForm.get('username')?.hasError('minlength')) {
+
+            <mat-error>
+              Minimum 3 characters
+            </mat-error>
+
+          }
+
+        </mat-form-field>
+
+        <!-- Password -->
+
+        <mat-form-field appearance="outline">
+
+          <mat-label>Password</mat-label>
+
+          <input
+            matInput
+            type="password"
+            formControlName="password" />
+
+          <mat-hint>
+            Minimum 6 characters
+          </mat-hint>
+
+          @if (createForm.get('password')?.hasError('required')) {
+
+            <mat-error>
+              Password is required
+            </mat-error>
+
+          }
+
+          @if (createForm.get('password')?.hasError('minlength')) {
+
+            <mat-error>
+              Minimum 6 characters
+            </mat-error>
+
+          }
+
+        </mat-form-field>
+
+        <!-- Role -->
+
+        <mat-form-field appearance="outline">
+
+          <mat-label>Role</mat-label>
+
+          <mat-select formControlName="role">
+
+            @for (r of roles; track r) {
+
+              <mat-option [value]="r">
+                {{ r }}
+              </mat-option>
+
+            }
+
+          </mat-select>
+
+        </mat-form-field>
+
+        <!-- Button -->
+
+        <div
+          style="
+            display:flex;
+            align-items:center;
+            height:56px;
+          ">
+
+          <button
+            mat-raised-button
+            color="primary"
+            type="submit"
+            [disabled]="createForm.invalid || isLoading"
+            style="
+              width:100%;
+              height:56px;
+              border-radius:10px;
+              font-size:15px;
+              font-weight:600;
+            ">
+
+            @if (isLoading) {
+
+              <mat-spinner
+                diameter="20"
+                style="
+                  display:inline-block;
+                  margin-right:8px;
+                ">
+              </mat-spinner>
+
+              Creating...
+
+            } @else {
+
+              ➕ Create User
+
+            }
+
+          </button>
+
+        </div>
+
       </form>
 
+      <!-- Success -->
+
       @if (successMsg) {
-        <p style="color:green;font-weight:bold;margin-top:12px">✅ {{ successMsg }}</p>
+
+        <div
+          style="
+            margin-top:18px;
+            padding:12px 16px;
+            border-radius:8px;
+            background:rgba(0,200,100,0.1);
+            border:1px solid rgba(0,180,80,0.4);
+            color:#0a7c3e;
+            font-size:14px;
+            font-weight:500;
+          ">
+
+          ✅ {{ successMsg }}
+
+        </div>
+
       }
+
+      <!-- Error -->
+
       @if (errorMsg) {
-        <p style="color:red;font-weight:bold;margin-top:12px">❌ {{ errorMsg }}</p>
+
+        <div
+          style="
+            margin-top:18px;
+            padding:12px 16px;
+            border-radius:8px;
+            background:rgba(255,50,50,0.1);
+            border:1px solid rgba(255,80,80,0.4);
+            color:#c0392b;
+            font-size:14px;
+            font-weight:500;
+          ">
+
+          ❌ {{ errorMsg }}
+
+        </div>
+
       }
-    </mat-card-content>
-  </mat-card>
 
-  <h3>All Users</h3>
-
-  @if (isLoadingUsers) {
-    <div style="text-align:center;padding:40px">
-      <mat-spinner diameter="40" style="margin:auto"></mat-spinner>
-      <p style="color:gray;margin-top:12px">Loading users...</p>
     </div>
-  } @else {
-    <table mat-table [dataSource]="users" style="width:100%" class="mat-elevation-z4">
 
-      <ng-container matColumnDef="username">
-        <th mat-header-cell *matHeaderCellDef>Username</th>
-        <td mat-cell *matCellDef="let u">{{ u.username }}</td>
-      </ng-container>
+    <!-- Users Card -->
 
-      <ng-container matColumnDef="role">
-        <th mat-header-cell *matHeaderCellDef>Role</th>
-        <td mat-cell *matCellDef="let u">
-          <mat-select [value]="u.role"
-            (selectionChange)="changeRole(u._id, $event.value)"
-            [disabled]="u.role === 'Admin'">
-            @for (r of roles; track r) {
-              <mat-option [value]="r">{{ r }}</mat-option>
-            }
-          </mat-select>
-        </td>
-      </ng-container>
+    <div
+      style="
+        background:white;
+        border-radius:16px;
+        padding:24px;
+        box-shadow:0 2px 12px rgba(0,0,0,0.08);
+      ">
 
-      <ng-container matColumnDef="actions">
-        <th mat-header-cell *matHeaderCellDef>Actions</th>
-        <td mat-cell *matCellDef="let u">
-          <button mat-icon-button color="warn" (click)="deleteUser(u._id)"
-            [disabled]="u.role === 'Admin'"
-            [title]="u.role === 'Admin' ? 'Cannot delete Admin' : 'Delete user'">
-            <mat-icon>delete</mat-icon>
-          </button>
-        </td>
-      </ng-container>
+      <div
+        style="
+          display:flex;
+          justify-content:space-between;
+          align-items:center;
+          margin-bottom:20px;
+          flex-wrap:wrap;
+          gap:12px;
+        ">
 
-      <tr mat-header-row *matHeaderRowDef="['username','role','actions']"></tr>
-      <tr mat-row *matRowDef="let row; columns: ['username','role','actions']"></tr>
-    </table>
+        <h3
+          style="
+            margin:0;
+            font-size:20px;
+            font-weight:600;
+            color:#1a1a2e;
+          ">
 
-    @if (users.length === 0) {
-      <p style="text-align:center;color:gray;margin-top:16px">No users found.</p>
-    }
-  }
+          👥 All Users
+
+        </h3>
+
+        <div
+          style="
+            background:#eef2ff;
+            color:#4f46e5;
+            padding:8px 14px;
+            border-radius:999px;
+            font-size:13px;
+            font-weight:600;
+          ">
+
+          Total Users: {{ users.length }}
+
+        </div>
+
+      </div>
+
+      <!-- Loading -->
+
+      @if (isLoadingUsers) {
+
+        <div style="text-align:center;padding:40px">
+
+          <mat-spinner
+            diameter="40"
+            style="margin:auto">
+          </mat-spinner>
+
+          <p
+            style="
+              color:#999;
+              margin-top:12px;
+              font-size:14px;
+            ">
+
+            Loading users...
+
+          </p>
+
+        </div>
+
+      }
+
+      <!-- Empty -->
+
+      @else if (users.length === 0) {
+
+        <div style="text-align:center;padding:40px 20px">
+
+          <div
+            style="
+              font-size:48px;
+              margin-bottom:12px;
+            ">
+
+            👥
+
+          </div>
+
+          <p
+            style="
+              color:#999;
+              font-size:14px;
+              margin:0;
+            ">
+
+            No users found.
+
+          </p>
+
+        </div>
+
+      }
+
+      <!-- Users Table -->
+
+      @else {
+
+        <div style="overflow:auto">
+
+          <table
+            mat-table
+            [dataSource]="users"
+            style="
+              width:100%;
+              border-radius:12px;
+              overflow:hidden;
+            "
+            class="mat-elevation-z0">
+
+            <!-- Username -->
+
+            <ng-container matColumnDef="username">
+
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                style="
+                  font-weight:700;
+                  color:#1a1a2e;
+                  background:#f8fafc;
+                ">
+
+                Username
+
+              </th>
+
+              <td mat-cell *matCellDef="let u">
+
+                <div
+                  style="
+                    display:flex;
+                    align-items:center;
+                    gap:10px;
+                  ">
+
+                  <div
+                    style="
+                      width:36px;
+                      height:36px;
+                      border-radius:50%;
+                      background:#4f46e5;
+                      color:white;
+                      display:flex;
+                      align-items:center;
+                      justify-content:center;
+                      font-size:14px;
+                      font-weight:600;
+                    ">
+
+                    {{ u.username.charAt(0).toUpperCase() }}
+
+                  </div>
+
+                  {{ u.username }}
+
+                </div>
+
+              </td>
+
+            </ng-container>
+
+            <!-- Role -->
+
+            <ng-container matColumnDef="role">
+
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                style="
+                  font-weight:700;
+                  color:#1a1a2e;
+                  background:#f8fafc;
+                ">
+
+                Role
+
+              </th>
+
+              <td mat-cell *matCellDef="let u">
+
+                <mat-select
+                  [value]="u.role"
+                  (selectionChange)="changeRole(u._id, $event.value)"
+                  [disabled]="u.role === 'Admin'">
+
+                  @for (r of roles; track r) {
+
+                    <mat-option [value]="r">
+                      {{ r }}
+                    </mat-option>
+
+                  }
+
+                </mat-select>
+
+              </td>
+
+            </ng-container>
+
+            <!-- Actions -->
+
+            <ng-container matColumnDef="actions">
+
+              <th
+                mat-header-cell
+                *matHeaderCellDef
+                style="
+                  font-weight:700;
+                  color:#1a1a2e;
+                  background:#f8fafc;
+                ">
+
+                Actions
+
+              </th>
+
+              <td mat-cell *matCellDef="let u">
+
+                <button
+                  mat-icon-button
+                  color="warn"
+                  (click)="deleteUser(u._id)"
+                  [disabled]="u.role === 'Admin'">
+
+                  <mat-icon>delete</mat-icon>
+
+                </button>
+
+              </td>
+
+            </ng-container>
+
+            <tr
+              mat-header-row
+              *matHeaderRowDef="displayedColumns">
+            </tr>
+
+            <tr
+              mat-row
+              *matRowDef="let row; columns: displayedColumns">
+            </tr>
+
+          </table>
+
+        </div>
+
+      }
+
+    </div>
+
+  </div>
+
 </div>
