@@ -3,10 +3,11 @@ import { isPlatformBrowser } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { tap } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private api = 'http://localhost:5000/api/auth';
+  private api = `${environment.apiUrl}/auth`;
 
   constructor(
     private http: HttpClient,

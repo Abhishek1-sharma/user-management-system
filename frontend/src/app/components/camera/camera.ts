@@ -6,6 +6,7 @@ import { ImageService } from '../../services/image';
 import { AuthService } from '../../services/auth';
 import { NavbarComponent } from '../navbar/navbar';
 import { ChangeDetectorRef } from '@angular/core';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-camera',
@@ -26,7 +27,7 @@ export class CameraComponent implements OnInit, OnDestroy {
   cameraActive = false;
   isSaving = false;
   isLoadingImages = false;
-  baseUrl = 'http://localhost:5000/';
+  baseUrl = environment.apiUrl.replace('/api', '/') ;
   token = '';
 
 constructor(

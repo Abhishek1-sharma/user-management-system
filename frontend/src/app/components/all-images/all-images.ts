@@ -20,6 +20,7 @@ import { ImageService } from '../../services/image';
 import { AuthService } from '../../services/auth';
 
 import { Router } from '@angular/router';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-all-images',
@@ -36,7 +37,7 @@ export class AllImagesComponent implements OnInit {
 
   images: any[] = [];
 
-  baseUrl = 'http://localhost:5000/';
+  baseUrl = environment.apiUrl.replace('/api', '/') ;
 
   token = '';
 

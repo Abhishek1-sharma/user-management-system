@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { environment } from '../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class ImageService {
-  private api = 'http://localhost:5000/api/images';
+  private api = `${environment.apiUrl}/images`;
   constructor(private http: HttpClient) {}
 
   upload(blob: Blob) {
